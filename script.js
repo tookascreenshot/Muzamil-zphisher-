@@ -85,6 +85,7 @@ const products = [
 // App State
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let currentCategory = 'all';
 let currentSort = 'name';
 let searchTerm = '';
@@ -151,6 +152,18 @@ function attachEventListeners() {
     cartModal.addEventListener('click', function(e) {
         if (e.target === cartModal) {
             closeCartModal();
+        }
+    });
+    
+    // Checkout form events
+    document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckoutModal);
+    document.getElementById('cancelCheckout').addEventListener('click', closeCheckoutModal);
+    document.getElementById('checkoutForm').addEventListener('submit', processOrder);
+    
+    const checkoutModal = document.getElementById('checkoutModal');
+    checkoutModal.addEventListener('click', function(e) {
+        if (e.target === checkoutModal) {
+            closeCheckoutModal();
         }
     });
 }
@@ -375,14 +388,12 @@ function addToCart(productId) {
     
     updateCartDisplay();
     saveCart();
-    showToast('Product added to cart!', 'success');
 }
 
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCartDisplay();
     saveCart();
-    showToast('Product removed from cart!', 'info');
 }
 
 function updateQuantity(productId, newQuantity) {
@@ -403,7 +414,6 @@ function clearCart() {
     cart = [];
     updateCartDisplay();
     saveCart();
-    showToast('Cart cleared!', 'info');
 }
 
 function updateCartDisplay() {
@@ -459,17 +469,79 @@ function closeCartModal() {
 
 function checkout() {
     if (cart.length === 0) {
-        showToast('Your cart is empty!', 'error');
+        alert('Your cart is empty!');
         return;
     }
     
-    showToast('Checkout completed! Thank you for your purchase!', 'success');
-    clearCart();
-    closeCartModal();
+    showCheckoutForm();
 }
 
 function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Checkout Functions
+function showCheckoutForm() {
+    const checkoutModal = document.getElementById('checkoutModal');
+    const checkoutItems = document.getElementById('checkoutItems');
+    const checkoutTotal = document.getElementById('checkoutTotal');
+    
+    // Display cart items in checkout
+    checkoutItems.innerHTML = cart.map(item => `
+        <div class="checkout-item">
+            <span>${item.name} x ${item.quantity}</span>
+            <span>$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+    `).join('');
+    
+    // Display total
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    checkoutTotal.textContent = total.toFixed(2);
+    
+    checkoutModal.classList.add('active');
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkoutModal').classList.remove('active');
+}
+
+function processOrder(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const orderData = {
+        id: 'ORD-' + Date.now(),
+        date: new Date().toLocaleDateString(),
+        customer: {
+            name: formData.get('fullName'),
+            email: formData.get('email'),
+            phone: formData.get('phoneNumber'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            postalCode: formData.get('postalCode'),
+            country: formData.get('country')
+        },
+        items: [...cart],
+        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        status: 'pending'
+    };
+    
+    // Save order
+    orders.push(orderData);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    
+    // Clear cart
+    clearCart();
+    
+    // Close modals
+    closeCheckoutModal();
+    closeCartModal();
+    
+    // Show success message
+    alert(`Order placed successfully!\nOrder ID: ${orderData.id}\nThank you ${orderData.customer.name}!`);
+    
+    // Reset form
+    e.target.reset();
 }
 
 // Wishlist Functions
@@ -481,10 +553,8 @@ function toggleWishlist(productId) {
     
     if (existingIndex > -1) {
         wishlist.splice(existingIndex, 1);
-        showToast('Removed from wishlist!', 'info');
     } else {
         wishlist.push(product);
-        showToast('Added to wishlist!', 'success');
     }
     
     updateWishlistDisplay();
@@ -585,11 +655,11 @@ function showAdminPanel() {
 function loadAdminDashboard() {
     const adminContent = document.getElementById('adminContent');
     
-    // Calculate stats
+    // Calculate real stats from orders
     const totalProducts = products.length;
-    const totalOrders = 1247;
-    const totalRevenue = 52340;
-    const totalUsers = 3421;
+    const totalOrders = orders.length;
+    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+    const totalUsers = new Set(orders.map(order => order.customer.email)).size;
     
     adminContent.innerHTML = `
         <div class="admin-stats">
@@ -618,33 +688,29 @@ function loadAdminDashboard() {
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
+                        <th>Phone</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>#12345</td>
-                        <td>Ahmed Khan</td>
-                        <td>$299.99</td>
-                        <td><span class="status completed">Completed</span></td>
-                        <td>2024-01-15</td>
-                    </tr>
-                    <tr>
-                        <td>#12346</td>
-                        <td>Sarah Ali</td>
-                        <td>$129.99</td>
-                        <td><span class="status pending">Pending</span></td>
-                        <td>2024-01-15</td>
-                    </tr>
-                    <tr>
-                        <td>#12347</td>
-                        <td>Hassan Ahmed</td>
-                        <td>$199.99</td>
-                        <td><span class="status shipped">Shipped</span></td>
-                        <td>2024-01-14</td>
-                    </tr>
+                    ${orders.length === 0 ? `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                No orders yet. Orders will appear here when customers make purchases.
+                            </td>
+                        </tr>
+                    ` : orders.slice(-5).reverse().map(order => `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.customer.name}</td>
+                            <td>${order.customer.phone}</td>
+                            <td>$${order.total.toFixed(2)}</td>
+                            <td><span class="status ${order.status}">${order.status}</span></td>
+                            <td>${order.date}</td>
+                        </tr>
+                    `).join('')}
                 </tbody>
             </table>
         </div>
@@ -674,7 +740,7 @@ function loadProductsAdmin() {
     adminContent.innerHTML = `
         <div class="admin-header">
             <h3>Product Management</h3>
-            <button class="btn btn-primary" onclick="showToast('Add product feature coming soon!', 'info')">
+            <button class="btn btn-primary" onclick="alert('Add product feature coming soon!')">
                 <i class="fas fa-plus"></i>
                 Add Product
             </button>
@@ -699,10 +765,10 @@ function loadProductsAdmin() {
                             <td>$${product.price}</td>
                             <td>${product.inStock ? 'In Stock' : 'Out of Stock'}</td>
                             <td>
-                                <button class="btn btn-sm" onclick="showToast('Edit feature coming soon!', 'info')">
+                                <button class="btn btn-sm" onclick="alert('Edit feature coming soon!')">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-secondary" onclick="showToast('Delete feature coming soon!', 'info')">
+                                <button class="btn btn-sm btn-secondary" onclick="alert('Delete feature coming soon!')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -724,7 +790,8 @@ function loadOrdersAdmin() {
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>Customer</th>
+                        <th>Customer Details</th>
+                        <th>Items</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Date</th>
@@ -732,70 +799,85 @@ function loadOrdersAdmin() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>#12345</td>
-                        <td>Ahmed Khan</td>
-                        <td>$299.99</td>
-                        <td>
-                            <select class="status-select">
-                                <option value="pending">Pending</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="completed" selected>Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </td>
-                        <td>2024-01-15</td>
-                        <td>
-                            <button class="btn btn-sm" onclick="showToast('View details coming soon!', 'info')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#12346</td>
-                        <td>Sarah Ali</td>
-                        <td>$129.99</td>
-                        <td>
-                            <select class="status-select">
-                                <option value="pending" selected>Pending</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </td>
-                        <td>2024-01-15</td>
-                        <td>
-                            <button class="btn btn-sm" onclick="showToast('View details coming soon!', 'info')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    ${orders.length === 0 ? `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem;">
+                                No orders yet. Orders will appear here when customers make purchases.
+                            </td>
+                        </tr>
+                    ` : orders.map(order => `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>
+                                <strong>${order.customer.name}</strong><br>
+                                📧 ${order.customer.email}<br>
+                                📞 ${order.customer.phone}<br>
+                                📍 ${order.customer.address}, ${order.customer.city}
+                            </td>
+                            <td>
+                                ${order.items.map(item => `${item.name} (x${item.quantity})`).join('<br>')}
+                            </td>
+                            <td>$${order.total.toFixed(2)}</td>
+                            <td>
+                                <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">
+                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td>${order.date}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="viewOrderDetails('${order.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
                 </tbody>
             </table>
         </div>
     `;
 }
 
-// Toast Notifications
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    const icon = type === 'success' ? 'check-circle' : 
-                 type === 'error' ? 'exclamation-circle' : 
-                 'info-circle';
-    
-    toast.innerHTML = `
-        <i class="fas fa-${icon}"></i>
-        <span>${message}</span>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    // Remove toast after 3 seconds
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+// Order Management Functions
+function updateOrderStatus(orderId, newStatus) {
+    const orderIndex = orders.findIndex(order => order.id === orderId);
+    if (orderIndex > -1) {
+        orders[orderIndex].status = newStatus;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        alert(`Order ${orderId} status updated to: ${newStatus}`);
+    }
+}
+
+function viewOrderDetails(orderId) {
+    const order = orders.find(order => order.id === orderId);
+    if (order) {
+        const details = `
+Order Details:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Order ID: ${order.id}
+Date: ${order.date}
+Status: ${order.status}
+
+Customer Information:
+• Name: ${order.customer.name}
+• Email: ${order.customer.email}
+• Phone: ${order.customer.phone}
+• Address: ${order.customer.address}
+• City: ${order.customer.city}
+• Postal Code: ${order.customer.postalCode}
+• Country: ${order.customer.country}
+
+Items Ordered:
+${order.items.map(item => `• ${item.name} - Qty: ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+
+Total Amount: $${order.total.toFixed(2)}
+        `;
+        alert(details);
+    }
 }
 
 // Global functions for onclick handlers
@@ -810,4 +892,5 @@ window.toggleWishlist = toggleWishlist;
 window.showHomePage = showHomePage;
 window.showWishlistPage = showWishlistPage;
 window.showAdminPanel = showAdminPanel;
-window.showToast = showToast;
+window.updateOrderStatus = updateOrderStatus;
+window.viewOrderDetails = viewOrderDetails;
