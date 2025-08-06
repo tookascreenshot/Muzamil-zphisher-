@@ -1,9 +1,12 @@
-import { ShoppingCart, Search, Menu } from 'lucide-react';
+import { ShoppingCart, Search, Heart, Settings } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
-const Header = ({ onCartClick, searchTerm, onSearchChange }) => {
+const Header = ({ onCartClick, onWishlistClick, onAdminClick, searchTerm, onSearchChange }) => {
   const { getCartItemsCount } = useCart();
-  const itemCount = getCartItemsCount();
+  const { getWishlistCount } = useWishlist();
+  const cartItemCount = getCartItemsCount();
+  const wishlistCount = getWishlistCount();
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -28,18 +31,42 @@ const Header = ({ onCartClick, searchTerm, onSearchChange }) => {
             </div>
           </div>
 
-          {/* Cart Button */}
-          <button
-            onClick={onCartClick}
-            className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </button>
+          {/* Navigation Buttons */}
+          <div className="flex items-center space-x-2">
+            {/* Wishlist Button */}
+            <button
+              onClick={onWishlistClick}
+              className="relative p-2 text-gray-600 hover:text-red-600 transition-colors"
+            >
+              <Heart className="h-6 w-6" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
+            {/* Cart Button */}
+            <button
+              onClick={onCartClick}
+              className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+
+            {/* Admin Button */}
+            <button
+              onClick={onAdminClick}
+              className="p-2 text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              <Settings className="h-6 w-6" />
+            </button>
+          </div>
         </div>
       </div>
     </header>
