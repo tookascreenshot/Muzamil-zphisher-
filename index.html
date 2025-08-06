@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - Simple Shopping App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">
+                    <h1>🛒 ShopEasy</h1>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button id="wishlistBtn" class="nav-btn">
+                        <i class="fas fa-heart"></i>
+                        <span id="wishlistCount" class="badge">0</span>
+                    </button>
+                    <button id="cartBtn" class="nav-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="badge">0</span>
+                    </button>
+                    <button id="adminBtn" class="nav-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Homepage -->
+        <div id="homePage" class="page active">
+            <div class="container">
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="category-filters">
+                        <button class="filter-btn active" data-category="all">All</button>
+                        <button class="filter-btn" data-category="electronics">Electronics</button>
+                        <button class="filter-btn" data-category="sports">Sports</button>
+                        <button class="filter-btn" data-category="home">Home</button>
+                        <button class="filter-btn" data-category="accessories">Accessories</button>
+                    </div>
+                    
+                    <div class="sort-filter">
+                        <select id="sortSelect">
+                            <option value="name">Sort by Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Products Grid -->
+                <div id="productsGrid" class="products-grid">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Detail Page -->
+        <div id="productDetailPage" class="page">
+            <div class="container">
+                <button id="backBtn" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Products
+                </button>
+                <div id="productDetailContent">
+                    <!-- Product detail will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Wishlist Page -->
+        <div id="wishlistPage" class="page">
+            <div class="container">
+                <button id="backToHomeBtn" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Products
+                </button>
+                <h2>My Wishlist</h2>
+                <div id="wishlistContent" class="products-grid">
+                    <!-- Wishlist items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPage" class="page">
+            <div class="container">
+                <button id="backToStoreBtn" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Store
+                </button>
+                <h2>Admin Panel</h2>
+                
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+                    <button class="tab-btn" data-tab="products">Products</button>
+                    <button class="tab-btn" data-tab="orders">Orders</button>
+                </div>
+                
+                <div id="adminContent">
+                    <!-- Admin content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Shopping Cart</h2>
+                <button id="closeCartBtn" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="cartItems" class="cart-items">
+                <!-- Cart items will be loaded here -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Total: $<span id="cartTotal">0.00</span></strong>
+                </div>
+                <div class="cart-actions">
+                    <button id="clearCartBtn" class="btn btn-secondary">Clear Cart</button>
+                    <button id="checkoutBtn" class="btn btn-primary">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container">
+        <!-- Toasts will appear here -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
