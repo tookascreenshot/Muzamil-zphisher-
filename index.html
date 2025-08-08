@@ -1,217 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopEasy - Simple Shopping App</title>
-    <!-- Simple Shopping App - Pure HTML/CSS/JS - No React Required! -->
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday My Love!</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="nav">
-                <div class="logo">
-                    <h1>🛒 ShopEasy</h1>
-                </div>
-                
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search products...">
-                    <button id="searchBtn"><i class="fas fa-search"></i></button>
-                </div>
-                
-                <div class="nav-buttons">
-                    <button id="wishlistBtn" class="nav-btn">
-                        <i class="fas fa-heart"></i>
-                        <span id="wishlistCount" class="badge">0</span>
-                    </button>
-                    <button id="cartBtn" class="nav-btn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cartCount" class="badge">0</span>
-                    </button>
-                    <button id="adminBtn" class="nav-btn">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Homepage -->
-        <div id="homePage" class="page active">
-            <div class="container">
-                <!-- Filters -->
-                <div class="filters">
-                    <div class="category-filters">
-                        <button class="filter-btn active" data-category="all">All</button>
-                        <button class="filter-btn" data-category="electronics">Electronics</button>
-                        <button class="filter-btn" data-category="sports">Sports</button>
-                        <button class="filter-btn" data-category="home">Home</button>
-                        <button class="filter-btn" data-category="accessories">Accessories</button>
-                    </div>
-                    
-                    <div class="sort-filter">
-                        <select id="sortSelect">
-                            <option value="name">Sort by Name</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                            <option value="rating">Rating</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Products Grid -->
-                <div id="productsGrid" class="products-grid">
-                    <!-- Products will be loaded here by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Detail Page -->
-        <div id="productDetailPage" class="page">
-            <div class="container">
-                <button id="backBtn" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Products
-                </button>
-                <div id="productDetailContent">
-                    <!-- Product detail will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Wishlist Page -->
-        <div id="wishlistPage" class="page">
-            <div class="container">
-                <button id="backToHomeBtn" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Products
-                </button>
-                <h2>My Wishlist</h2>
-                <div id="wishlistContent" class="products-grid">
-                    <!-- Wishlist items will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel -->
-        <div id="adminPage" class="page">
-            <div class="container">
-                <button id="backToStoreBtn" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Store
-                </button>
-                <h2>Admin Panel</h2>
-                
-                <div class="admin-tabs">
-                    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-                    <button class="tab-btn" data-tab="products">Products</button>
-                    <button class="tab-btn" data-tab="orders">Orders</button>
-                </div>
-                
-                <div id="adminContent">
-                    <!-- Admin content will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Shopping Cart Modal -->
-    <div id="cartModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Shopping Cart</h2>
-                <button id="closeCartBtn" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="cartItems" class="cart-items">
-                <!-- Cart items will be loaded here -->
-            </div>
-            <div class="cart-footer">
-                <div class="cart-total">
-                    <strong>Total: $<span id="cartTotal">0.00</span></strong>
-                </div>
-                <div class="cart-actions">
-                    <button id="clearCartBtn" class="btn btn-secondary">Clear Cart</button>
-                    <button id="checkoutBtn" class="btn btn-primary">Checkout</button>
-                </div>
-            </div>
-        </div>
+  <div class="birthday-container">
+    <h1 id="main-heading">Happy Birthday, My Love!</h1>
+    <div id="animation-area"></div>
+    <div class="wish-buttons">
+      <button class="wish-btn" data-wish="1">Wish 1</button>
+      <button class="wish-btn" data-wish="2">Wish 2</button>
+      <button class="wish-btn" data-wish="3">Wish 3</button>
+      <button class="wish-btn" data-wish="4">Wish 4</button>
     </div>
-
-    <!-- Checkout Form Modal -->
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Checkout - Enter Your Details</h2>
-                <button id="closeCheckoutBtn" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form id="checkoutForm" class="checkout-form">
-                <div class="form-group">
-                    <label for="fullName">Full Name *</label>
-                    <input type="text" id="fullName" name="fullName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phoneNumber">Phone Number *</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="address">Delivery Address *</label>
-                    <textarea id="address" name="address" rows="3" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="city">City *</label>
-                    <input type="text" id="city" name="city" required>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group half">
-                        <label for="postalCode">Postal Code *</label>
-                        <input type="text" id="postalCode" name="postalCode" required>
-                    </div>
-                    <div class="form-group half">
-                        <label for="country">Country *</label>
-                        <select id="country" name="country" required>
-                            <option value="">Select Country</option>
-                            <option value="Pakistan">Pakistan</option>
-                            <option value="India">India</option>
-                            <option value="Bangladesh">Bangladesh</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="checkout-summary">
-                    <h3>Order Summary</h3>
-                    <div id="checkoutItems"></div>
-                    <div class="checkout-total">
-                        <strong>Total: $<span id="checkoutTotal">0.00</span></strong>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" id="cancelCheckout" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-credit-card"></i>
-                        Place Order
-                    </button>
-                </div>
-            </form>
-        </div>
+    <div id="wish-message"></div>
+    <div class="translator">
+      <h3>Translate Wish (English ↔ Urdu)</h3>
+      <textarea id="translate-input" placeholder="Type your wish here..."></textarea>
+      <button id="translate-btn">Translate</button>
+      <div id="translate-output"></div>
     </div>
-
-    <script src="script.js"></script>
+  </div>
+  <audio id="birthday-music" src="birthday.mp3" loop></audio>
+  <script src="script.js"></script>
 </body>
 </html>

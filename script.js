@@ -894,3 +894,150 @@ window.showWishlistPage = showWishlistPage;
 window.showAdminPanel = showAdminPanel;
 window.updateOrderStatus = updateOrderStatus;
 window.viewOrderDetails = viewOrderDetails;
+
+// Confetti animation
+function createConfetti() {
+  const area = document.getElementById('animation-area');
+  area.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const conf = document.createElement('div');
+    conf.className = 'confetti';
+    conf.style.left = Math.random() * 100 + '%';
+    conf.style.animationDuration = (2 + Math.random() * 2) + 's';
+    conf.style.background = `hsl(${Math.random()*360}, 90%, 70%)`;
+    area.appendChild(conf);
+  }
+}
+
+// Balloons animation
+function createBalloons() {
+  const area = document.getElementById('animation-area');
+  for (let i = 0; i < 8; i++) {
+    const balloon = document.createElement('div');
+    balloon.className = 'balloon';
+    balloon.style.left = Math.random() * 90 + '%';
+    balloon.style.animationDuration = (4 + Math.random() * 3) + 's';
+    balloon.style.background = `hsl(${Math.random()*360}, 80%, 60%)`;
+    area.appendChild(balloon);
+  }
+}
+
+// Add confetti and balloons on load
+window.onload = function() {
+  createConfetti();
+  createBalloons();
+  setTimeout(() => {
+    document.getElementById('birthday-music').play();
+  }, 800);
+};
+
+// Wishes
+const wishes = [
+  "May your day be filled with love, laughter, and endless happiness!",
+  "Wishing you all the success and joy in the world. Happy Birthday!",
+  "You are the light of my life. Have a magical birthday, sweetheart!",
+  "May all your dreams come true today and always. Love you!"
+];
+
+const urduWishes = [
+  "Aap ka din pyaar, hansne aur khushiyon se bhara ho!",
+  "Aapko har kamyabi aur khushi mile. Janamdin Mubarak!",
+  "Aap meri zindagi ki roshni hain. Jadoo bhara janamdin ho, jaan!",
+  "Aapke saare khwab poore hon, aaj bhi aur hamesha. Pyaar karta hoon!"
+];
+
+// Wish button logic
+const wishBtns = document.querySelectorAll('.wish-btn');
+const wishMsg = document.getElementById('wish-message');
+wishBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    const idx = parseInt(this.dataset.wish) - 1;
+    wishMsg.textContent = wishes[idx];
+    wishMsg.style.color = '#ff6f61';
+    createConfetti();
+    createBalloons();
+  });
+});
+
+// Translator logic (simple dictionary for demo)
+const dictionary = {
+  'happy birthday': 'janamdin mubarak',
+  'love': 'pyaar',
+  'life': 'zindagi',
+  'success': 'kamyabi',
+  'joy': 'khushi',
+  'dreams': 'khwab',
+  'sweetheart': 'jaan',
+  'day': 'din',
+  'filled': 'bhara',
+  'light': 'roshni',
+  'always': 'hamesha',
+  'wish': 'dua',
+  'you': 'aap',
+  'my': 'mera',
+  'all': 'sab',
+  'true': 'sach',
+  'forever': 'hamesha',
+  'smile': 'muskurahat',
+  'happiness': 'khushi',
+  'birthday': 'janamdin',
+};
+
+function translateToUrdu(text) {
+  let result = text.toLowerCase();
+  Object.keys(dictionary).forEach(key => {
+    result = result.replace(new RegExp(key, 'g'), dictionary[key]);
+  });
+  return result;
+}
+
+function translateToEnglish(text) {
+  let result = text.toLowerCase();
+  Object.entries(dictionary).forEach(([en, ur]) => {
+    result = result.replace(new RegExp(ur, 'g'), en);
+  });
+  return result;
+}
+
+document.getElementById('translate-btn').onclick = function() {
+  const input = document.getElementById('translate-input').value.trim();
+  let output = '';
+  if (/^[a-zA-Z0-9 ,.!?']+$/.test(input)) {
+    output = translateToUrdu(input);
+  } else {
+    output = translateToEnglish(input);
+  }
+  document.getElementById('translate-output').textContent = output;
+};
+
+// Confetti CSS
+const style = document.createElement('style');
+style.innerHTML = `
+.confetti {
+  position: absolute;
+  top: -20px;
+  width: 12px;
+  height: 18px;
+  border-radius: 4px;
+  opacity: 0.8;
+  animation: confetti-fall linear infinite;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(110vh) rotate(360deg); }
+}
+.balloon {
+  position: absolute;
+  bottom: -60px;
+  width: 32px;
+  height: 44px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  opacity: 0.85;
+  animation: balloon-rise linear infinite;
+}
+@keyframes balloon-rise {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-110vh) scale(1.1); }
+}
+`;
+document.head.appendChild(style);
